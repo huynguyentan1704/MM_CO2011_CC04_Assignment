@@ -63,7 +63,7 @@ def main():
     c = np.array([1, -2, 3, -1, 1, 2])
     print("\n--- Optimize c·M ---")
     max_mark, max_val = max_reachable_marking(
-        pn.place_ids, bdd, c
+        pn.place_names, bdd, c
     )
     print("c:", c)
     print("Max marking:", max_mark)
