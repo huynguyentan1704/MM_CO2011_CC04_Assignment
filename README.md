@@ -115,11 +115,13 @@ pip install -r requirements.txt
 
 ## 3. Running Code
 
+Run the main program:
+
 ```bash
 python main.py
 ```
 
-Running tests:
+Run tests:
 
 ```bash
 pytest -vv
@@ -135,8 +137,8 @@ python -m pytest tests/ -v
 
 ## 4. Summary
 
-1. Clone repo (one repo → switch branches, or separate clones per task)  
-2. Create Conda env or venv  
+1. Clone repo (single or per-task folders)  
+2. Create environment (Conda recommended or venv)  
 3. Activate environment  
 4. Install dependencies  
 5. Run code or tests  
@@ -148,4 +150,26 @@ python -m pytest tests/ -v
 - Required Python version: 3.9.x  
 - Conda env name: mhh_btl_env  
 - venv folder name: venv  
-- Each task lives on its own Git branch to avoid conflicts  
+- Each task lives on its own Git branch  
+
+---
+
+## 6. Libraries Used
+
+All tasks use standard python libraries plus several specialized ones for Petri Net analysis:
+
+- **pytest** — test runner for all tasks  
+- **numpy** — matrix operations, incidence matrices, markings  
+- **pyeda** — Binary Decision Diagrams (BDD) for symbolic reachability  
+- **dd / autoref** (optional depending on task)  
+- **collections** — deque for BFS/DFS  
+- **xml.etree.ElementTree** — PNML parsing  
+- **typing** — type hints for clarity  
+
+Install automatically via:
+
+```bash
+pip install -r requirements.txt
+```
+
+Each task folder may contain its own requirements file depending on the assignment.
