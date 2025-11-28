@@ -63,24 +63,6 @@ def test_003():
 
     assert output == expected, f"Expected {expected}, but got {output}"
 
-def test_003():
-    P = ["p1", "p2", "p3"]
-    T = ["t1", "t2", "t3"]
-    I = np.array([[1,0,0],
-                  [0,1,0],
-                  [0,0,1]])
-    O = np.array([[0,1,0],
-                  [0,0,1],
-                  [1,0,0]])
-    M0 = np.array([1,1,1])
-
-    output= bfs_reachable(PetriNet(P, T, P, T, I, O, M0))
-
-    expected = {
-        (1, 1, 1),
-    }
-
-    assert output == expected, f"Expected {expected}, but got {output}"
 
 def test_004():
     P = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7']
