@@ -145,7 +145,7 @@ def _is_reachable_by_bfs(M_target: np.ndarray, I: np.ndarray, O: np.ndarray, M0:
 
 
 # ----------------------
-# Main function required by tests
+# Main function 
 # ----------------------
 def deadlock_reachable_marking(
     pn,
