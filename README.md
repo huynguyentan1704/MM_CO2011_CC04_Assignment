@@ -56,13 +56,13 @@ python run.py
 This file is used to visualize and analyze the logical structure of reachable markings.
 ## Output
 <p align="center">
-  <img src="images/bdd.png" alt="BDD" width="500">
+  <img src="images/bdd.png" alt="BDD">
 </p>
 
 <p align="center">
-  <img src="images/OP_testcase.png" alt="OP Testcase" width="500">
+  <img src="images/OP_testcase.png" alt="OP Testcase">
 </p>
 
 <p align="center">
-  <img src="images/OP_run.png" alt="OP Run" width="500">
+  <img src="images/OP_run.png" alt="OP Run">
 </p>
