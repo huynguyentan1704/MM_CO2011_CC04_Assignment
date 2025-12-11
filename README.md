@@ -44,9 +44,9 @@ python3 -m pytest -vv test_Optimization.py::test_001
 ## Running run.py
 Make sure you have Python 3.8+ installed.
 Install required packages:
-
+```
 pip install pyeda graphviz pytest
-
+```
 
 You must also install Graphviz on your system so that .png images can be generated.
 
