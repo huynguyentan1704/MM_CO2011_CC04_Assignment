@@ -41,14 +41,6 @@ python3 -m pytest -vv test_Deadlock.py
 python3 -m pytest -vv test_Deadlock.py::test_001
 ```
 ## Running run.py
-Make sure you have Python 3.8+ installed.
-Install required packages:
-```
-pip install pyeda graphviz pytest
-```
-
-You must also install Graphviz on your system so that .png images can be generated.
-
 To generate the BDD visualization and the minimized Boolean expression, run:
 ```
 python run.py
