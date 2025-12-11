@@ -9,12 +9,12 @@ time on some example models.
 
 ## Requirements
 
-- Tạo môi trường ảo (virtual environment)
+- Create a virtual environment
 ```
 python3 -m venv venv
 ```
 
-- Kích hoạt môi trường ảo
+- Virtual Environment activation
 ```
 # Windows
 venv\Scripts\Activate.ps1
@@ -23,7 +23,7 @@ venv\Scripts\Activate.ps1
 source venv/bin/activate
 ```
 
-- Cài đặt các thư viện từ `requirements.txt`
+- Install libraries from `requirements.txt`
 ```
 pip install -r requirements.txt
 ```
