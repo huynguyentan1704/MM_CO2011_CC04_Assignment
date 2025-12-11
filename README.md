@@ -1,7 +1,7 @@
 # TASK 2 BTL MHH
 
 **Explicit computation of reachable markings:** Implement a basic breadth-first search
-(BFS) algorithm to enumerate all reachable markings starting
+(BFS) algorithm to enumerate all reachable 1-safety markings starting
 from the initial marking.
 
 ## Requirements
