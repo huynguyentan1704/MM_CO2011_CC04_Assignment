@@ -1,4 +1,4 @@
-# MHH Win-to-Win – BTL HK251 Tasks
+# MM 251 – Assignment
 - Task 1 PNML Parsing: Reads and parses a Petri Net from a PNML file, extracting places, transitions, arcs, and initial markings.
 
 - Task 2 Reachability (BFS/DFS): Computes the reachable markings of the Petri Net using explicit-state search via BFS and DFS.
@@ -37,6 +37,9 @@ This design ensures:
 - **clean separation** between assignment requirements,  
 - and **consistent structure** across all tasks.
 
+Branch-Specific Operations & Demo Notes:
+Each branch contains only the implementations required for that task,but all branches rely on the shared environment described below.
+
 # Environment Setup
 
 You can set up the environment in one of the following ways:
@@ -53,22 +56,18 @@ pip install -r requirements.txt
 ```bash
 python3 -m venv venv
 ```
-# macOS / Linux
+
 ```bash
-source venv/bin/activate
+source venv/bin/activate  #macOS / Linux
+venv\Scripts\Activate.ps1 #Windows PowerShell
+venv\Scripts\activate.bat #Windows CMD
 ```
-# Windows PowerShell
-```bash
-venv\Scripts\Activate.ps1
-```
-# Windows CMD
-```bash
-venv\Scripts\activate.bat
-```
+
 then
 ```bash
 pip install -r requirements.txt
 ```
+
 ### Option 3 – Docker
 Build the image:
 ```bash
@@ -92,5 +91,31 @@ docker run --rm -it \
   bash
 ```
 
+## Version & Dependencies
+
+This project is implemented using **Python 3.9.x**, which is required for full compatibility with the Petri Net libraries used (especially `pyeda`).  
+All tasks share the same dependency set, installed automatically from `requirements.txt`.
+
+### Python Version
+- **Python 3.9.x** (strictly required)  
+  PyEDA and some BDD backends do not support Python 3.10+.
+
+### Required Libraries
+
+| Library | Purpose |
+|--------|---------|
+| **numpy** | Matrix operations, Pre/Post/Incidence matrices |
+| **pyeda** | Binary Decision Diagrams (BDD) for symbolic reachability |
+| **pytest** | Automated unit testing for all tasks |
+| **xml.etree.ElementTree** | Parsing PNML files (places, transitions, arcs) |
+| **collections** | BFS/DFS queues, deques |
+| **typing** | Type annotations |
+| **pulp** | Optimization framework (only for certain variants) |
+
+### Installation
+All dependencies can be installed via:
+
+```bash
+pip install -r requirements.txt
 
 
