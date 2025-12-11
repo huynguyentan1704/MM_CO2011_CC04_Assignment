@@ -35,15 +35,24 @@ python run.py
 <p align="center">
   <img src = "https://github.com/user-attachments/assets/b4bcd905-4edc-4333-a8e3-3e44c93af1d5"/>
 </p>
+
 - Run all BFS test
 
 ```
 python -m pytest -vv test_BFS.py
 ```
+<p align="center">
+  <img src = "https://github.com/user-attachments/assets/0d2ef84e-fb01-4d82-b9c8-a92d5d3247df"/>
+</p>
+
 - Run a single BFS test
 ```
-python -m pytest -vv test_BFS::test_001
+python -m pytest -vv test_BFS.py::test_001
 ```
+<p align="center">
+  <img src = "https://github.com/user-attachments/assets/f508acc3-0611-4a1d-94f0-7fbb2e61de07"/>
+</p>
+
 ---
 <p align="center">
   <a href="https://www.facebook.com/Shiba.Vo.Tien">
