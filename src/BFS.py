@@ -3,7 +3,7 @@ import numpy as np
 from .PetriNet import PetriNet 
 from typing import Set, Tuple, Deque
 
-def bfs_reachable(pn:PetriNet) -> Set[Tuple[int,...]]:
+def bfs_safe_reachable(pn:PetriNet) -> Set[Tuple[int,...]]:
 
     I = pn.I
     O = pn.O
