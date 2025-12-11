@@ -32,6 +32,7 @@ pip install -r requirements.txt
 ```
 python run.py
 ```
+![](https://github.com/user-attachments/assets/b4bcd905-4edc-4333-a8e3-3e44c93af1d5)
 
 - Run all BFS test
 
