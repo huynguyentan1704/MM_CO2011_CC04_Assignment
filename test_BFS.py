@@ -1,6 +1,6 @@
 import numpy as np
 from src.PetriNet import PetriNet
-from src.BFS import bfs_reachable
+from src.BFS import bfs_safe_reachable
 
 def test_001():
     P = ["p1", "p2", "p3"]
@@ -13,7 +13,7 @@ def test_001():
                   [1,0,0]])
     M0 = np.array([1,0,0])
 
-    output= bfs_reachable(PetriNet(P, T, P, T, I, O, M0))
+    output= bfs_safe_reachable(PetriNet(P, T, P, T, I, O, M0))
 
     expected = {
         (1, 0, 0),
@@ -34,7 +34,7 @@ def test_002():
                   [1,0,0]])
     M0 = np.array([1,0,1])
 
-    output= bfs_reachable(PetriNet(P, T, P, T, I, O, M0))
+    output= bfs_safe_reachable(PetriNet(P, T, P, T, I, O, M0))
 
     expected = {
         (1, 1, 0),
@@ -55,7 +55,7 @@ def test_003():
                   [1,0,0]])
     M0 = np.array([1,1,1])
 
-    output= bfs_reachable(PetriNet(P, T, P, T, I, O, M0))
+    output= bfs_safe_reachable(PetriNet(P, T, P, T, I, O, M0))
 
     expected = {
         (1, 1, 1),
@@ -79,7 +79,7 @@ def test_004():
                 [0, 0, 0, 0, 0, 1, 0]])
     M0 = np.array([1, 0, 0, 0, 0, 0, 0])
 
-    output= bfs_reachable(PetriNet(P, T, P, T, I, O, M0))
+    output= bfs_safe_reachable(PetriNet(P, T, P, T, I, O, M0))
 
     expected = {
         (0, 0, 0, 0, 0, 0, 1),
@@ -109,7 +109,7 @@ def test_005():
                 [0, 0, 0, 0, 0, 1, 0]])
     M0 = np.array([1, 0, 0, 0, 0, 1, 0])
 
-    output= bfs_reachable(PetriNet(P, T, P, T, I, O, M0))
+    output= bfs_safe_reachable(PetriNet(P, T, P, T, I, O, M0))
 
     expected = {
         (0, 0, 0, 0, 0, 1, 1),
