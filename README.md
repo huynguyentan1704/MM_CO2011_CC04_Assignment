@@ -33,12 +33,15 @@ pip install -r requirements.txt
 python run.py
 ```
 
-- Run a BFS test
+- Run all BFS test
 
 ```
 python -m pytest -vv test_BFS.py
 ```
-
+- Run a single BFS test
+```
+python -m pytest -vv test_BFS::test_001
+```
 ---
 <p align="center">
   <a href="https://www.facebook.com/Shiba.Vo.Tien">
