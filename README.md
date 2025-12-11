@@ -6,12 +6,12 @@ from the initial marking.
 
 ## Requirements
 
-- Tạo môi trường ảo (virtual environment)
+- Create virtual environment
 ```
 python -m venv venv
 ```
 
-- Kích hoạt môi trường ảo
+- Activate virtual environment
 ```
 # Windows
 venv\Scripts\Activate.ps1
@@ -20,7 +20,7 @@ venv\Scripts\Activate.ps1
 source venv/bin/activate
 ```
 
-- Cài đặt các thư viện từ `requirements.txt`
+- Install required library from `requirements.txt`
 ```
 pip install -r requirements.txt
 ```
