@@ -1,175 +1,96 @@
 # MHH Win-to-Win – BTL HK251 Tasks
+- Task 1 PNML Parsing: Reads and parses a Petri Net from a PNML file, extracting places, transitions, arcs, and initial markings.
 
-This repository contains multiple tasks for the BTL HK251 course.  
-Each task is stored on a separate Git branch:
+- Task 2 Reachability (BFS/DFS): Computes the reachable markings of the Petri Net using explicit-state search via BFS and DFS.
 
-- task1  
-- task2  
-- task3  
-- task4  
-- task5  
-- task6  
+- Task 3 BDD Reachability Analysis: Uses Binary Decision Diagrams (BDD) to compute the symbolic reachable state space efficiently.
 
-You can choose to work with:
+- Task 4 Deadlock Detection: Identifies deadlock markings by checking reachable states where no transition is enabled.
 
-- Conda (Python 3.9.20), or  
-- Built-in virtual environment (venv)
+- Task 5 Optimization (Max cᵀM): Finds the maximum value of a weighted marking using exhaustive search and Branch-and-Bound pruning.
 
-Each task can be cloned individually or the entire repo can be cloned once and switched branches.
+- Task 6 Full Project Runner: Runs all components together: parsing, reachability (BFS/DFS/BDD), deadlock detection, and optimization.
 
----
+## Repository Design
 
-## 1. Clone Tasks
+This repository is organized using a branch-per-task structure.  
+Each task required in the BTL HK251 assignment is implemented on its own Git branch:
 
-### Option A — Clone repo once and switch branches
+- `task1` – PNML parsing  
+- `task2` – BFS/DFS reachability  
+- `task3` – BDD reachability  
+- `task4` – Deadlock detection  
+- `task5` – Optimization (max cᵀM)  
+- `task6` – Full project runner  
 
-```bash
-git clone https://github.com/huynguyentan1704/MHH_win-to-win.git
-cd MHH_win-to-win
+All branches share the same base layout so that each task can be developed and tested independently while still building on the same underlying Petri Net model.
 
-git branch -a
+At the root level, the repository includes:
 
-git checkout task1
-# git checkout task2
-# git checkout task3
-# git checkout task4
-# git checkout task5
-# git checkout task6
-```
+- a unified `src/` folder containing core logic (Petri Net, BFS/DFS, BDD, Optimization, etc.),  
+- a `tests/` folder for validation,  
+- and a single `main.py` file whose behavior changes depending on the branch.
 
----
+This design ensures:
+- **modularity** (each task works on its own branch),  
+- **reusability** (common code stays in `src/`),  
+- **clean separation** between assignment requirements,  
+- and **consistent structure** across all tasks.
 
-### Option B — Clone each task into its own folder
+# Environment Setup
 
-```bash
-git clone -b task1 --single-branch https://github.com/huynguyentan1704/MHH_win-to-win.git task1
-git clone -b task2 --single-branch https://github.com/huynguyentan1704/MHH_win-to-win.git task2
-git clone -b task3 --single-branch https://github.com/huynguyentan1704/MHH_win-to-win.git task3
-git clone -b task4 --single-branch https://github.com/huynguyentan1704/MHH_win-to-win.git task4
-git clone -b task5 --single-branch https://github.com/huynguyentan1704/MHH_win-to-win.git task5
-git clone -b task6 --single-branch https://github.com/huynguyentan1704/MHH_win-to-win.git task6
-```
+You can set up the environment in one of the following ways:
 
----
-
-## 2. Environment Setup
-
-Choose ONE of the two methods below.
-
----
-
-## 2.1. Setup using Conda (Python 3.9.20)
-
-### Create environment
+### Option 1 – Conda (recommended)
 
 ```bash
 conda create -n mhh_btl_env python=3.9.20
-```
-
-### Activate environment
-
-```bash
 conda activate mhh_btl_env
-```
-
-### Install requirements
-
-```bash
 pip install -r requirements.txt
 ```
 
----
-
-## 2.2. Setup using built-in venv (virtual environment)
-
-### Create venv
-
+### Option 2 – Built-in venv
 ```bash
 python3 -m venv venv
 ```
-
-### Activate venv
-
-macOS / Linux:
+# macOS / Linux
 ```bash
 source venv/bin/activate
 ```
-
-Windows PowerShell:
+# Windows PowerShell
 ```bash
 venv\Scripts\Activate.ps1
 ```
-
-Windows CMD:
+# Windows CMD
 ```bash
 venv\Scripts\activate.bat
 ```
-
-### Install requirements
-
+then
 ```bash
 pip install -r requirements.txt
 ```
-
----
-
-## 3. Running Code
-
-Run the main program:
-
+### Option 3 – Docker
+Build the image:
 ```bash
-python main.py
+docker build -t mhh-btl .
 ```
 
-Run tests:
-
+Run the container and execute the main script:
 ```bash
-pytest -vv
+docker run --rm -it \
+  -v "$(pwd)":/app \
+  -w /app \
+  mhh-btl \
+  python main.py
+```
+Start an interactive shell inside the container:
+```bash
+docker run --rm -it \
+  -v "$(pwd)":/app \
+  -w /app \
+  mhh-btl \
+  bash
 ```
 
-or:
 
-```bash
-python -m pytest tests/ -v
-```
 
----
-
-## 4. Summary
-
-1. Clone repo (single or per-task folders)  
-2. Create environment (Conda recommended or venv)  
-3. Activate environment  
-4. Install dependencies  
-5. Run code or tests  
-
----
-
-## 5. Notes
-
-- Required Python version: 3.9.x  
-- Conda env name: mhh_btl_env  
-- venv folder name: venv  
-- Each task lives on its own Git branch  
-
----
-
-## 6. Libraries Used
-
-All tasks use standard python libraries plus several specialized ones for Petri Net analysis:
-
-- **pytest** — test runner for all tasks  
-- **numpy** — matrix operations, incidence matrices, markings  
-- **pyeda** — Binary Decision Diagrams (BDD) for symbolic reachability  
-- **dd / autoref** (optional depending on task)  
-- **collections** — deque for BFS/DFS  
-- **xml.etree.ElementTree** — PNML parsing  
-- **typing** — type hints for clarity  
-
-Install automatically via:
-
-```bash
-pip install -r requirements.txt
-```
-
-Each task folder may contain its own requirements file depending on the assignment.
