@@ -69,27 +69,14 @@ pip install -r requirements.txt
 ```
 
 ### Option 3 – Docker
-Build the image:
-```bash
-docker build -t mhh-btl .
-```
+This repository includes a ready-to-use **Dockerfile** that allows you to run all tasks without installing Python or dependencies on your local machine.  
+The Docker image contains:
 
-Run the container and execute the main script:
-```bash
-docker run --rm -it \
-  -v "$(pwd)":/app \
-  -w /app \
-  mhh-btl \
-  python main.py
-```
-Start an interactive shell inside the container:
-```bash
-docker run --rm -it \
-  -v "$(pwd)":/app \
-  -w /app \
-  mhh-btl \
-  bash
-```
+- Python 3.9  
+- All required libraries from `requirements.txt`  
+- The project source code mounted at runtime  
+
+This ensures that every task (task1 → task6) runs in a clean and identical environment.
 
 ## Version & Dependencies
 
