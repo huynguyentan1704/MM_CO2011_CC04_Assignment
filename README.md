@@ -8,12 +8,12 @@ initial marking [17]. Report the running time on some example models.
 
 ## Requirements
 
-- Tạo môi trường ảo (virtual environment)
+- Create a virtual environment
 ```
 python3 -m venv venv
 ```
 
-- Kích hoạt môi trường ảo
+- Activate the virtual environment
 ```
 # Windows
 venv\Scripts\Activate.ps1
@@ -22,7 +22,7 @@ venv\Scripts\Activate.ps1
 source venv/bin/activate
 ```
 
-- Cài đặt các thư viện từ `requirements.txt`
+- Install required libraries from requirements.txt
 ```
 pip install -r requirements.txt
 ```
