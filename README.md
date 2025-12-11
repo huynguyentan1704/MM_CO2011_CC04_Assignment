@@ -54,3 +54,10 @@ To generate the BDD visualization and the minimized Boolean expression, run:
 python run.py
 ```
 This file is used to visualize and analyze the logical structure of reachable markings.
+## Output
+
+![BDD](images/bdd.png)
+
+![OP Testcase](images/OP_testcase.png)
+
+![OP Run](images/OP_run.png)
