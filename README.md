@@ -40,6 +40,11 @@ python3 -m pytest -vv test_Deadlock.py
 ```
 python3 -m pytest -vv test_Deadlock.py::test_001
 ```
+
+<p align="center">
+  <img src="images/OP_testcase.png" alt="OP Testcase">
+</p>
+
 ## Running run.py
 To generate the BDD visualization and the minimized Boolean expression, run:
 ```
@@ -49,10 +54,6 @@ This file is used to visualize and analyze the logical structure of reachable ma
 ## Output
 <p align="center">
   <img src="images/bdd.png" alt="BDD">
-</p>
-
-<p align="center">
-  <img src="images/OP_testcase.png" alt="OP Testcase">
 </p>
 
 <p align="center">
