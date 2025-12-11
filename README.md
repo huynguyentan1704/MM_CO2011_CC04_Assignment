@@ -2,7 +2,7 @@
 
 **Explicit computation of reachable markings:** Implement a basic breadth-first search
 (BFS) algorithm to enumerate all reachable markings starting
-from the initial marking
+from the initial marking.
 
 ## Requirements
 
@@ -28,15 +28,15 @@ pip install -r requirements.txt
 
 ##  Running tests
 
-- Run all tests
+- Run run.py
+```
+python run.py
+```
+
+- Run a BFS test
+
 ```
 python -m pytest -vv test_BFS.py
-```
-
-- Run a single test function
-
-```
-python -m pytest -vv test_DFS.py::test_001
 ```
 
 ---
