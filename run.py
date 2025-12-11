@@ -1,5 +1,5 @@
 from src.PetriNet import PetriNet
-from src.BFS import bfs_reachable
+from src.BFS import bfs_safe_reachable
 import numpy as np
 
 if __name__ == "__main__":
@@ -13,7 +13,7 @@ if __name__ == "__main__":
                   [1,0,0]])
     M0 = np.array([1,0,1])
 
-    output= bfs_reachable(PetriNet(P, T, P, T, I, O, M0))
+    output= bfs_safe_reachable(PetriNet(P, T, P, T, I, O, M0))
 
     expected = {
         (1, 1, 0),
