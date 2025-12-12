@@ -8,12 +8,12 @@ mance with the explicit approach (time and memory)
 
 ## Requirements
 
-- Tạo môi trường ảo (virtual environment)
+- Set up (virtual environment)
 ```
 python3 -m venv venv
 ```
 
-- Kích hoạt môi trường ảo
+- Acitvate virtual envirnment
 ```
 # Windows
 venv\Scripts\Activate.ps1
@@ -22,7 +22,7 @@ venv\Scripts\Activate.ps1
 source venv/bin/activate
 ```
 
-- Cài đặt các thư viện từ `requirements.txt`
+- Install library vie `requirements.txt`
 ```
 pip install -r requirements.txt
 ```
@@ -37,7 +37,7 @@ python3 -m pytest -vv test_BDD.py
 <p align="center">
   <img src="img/task3_test.jpg" alt="testcase">
 </p>
-- Run a procedure
+## Run a procedure
 
 ```
 python run.py
