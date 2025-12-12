@@ -11,6 +11,16 @@
 
 - Task 6 Full Project Runner: Runs all components together: parsing, reachability (BFS/DFS/BDD), deadlock detection, and optimization.
 
+## Workload
+| Name               | Student ID | Task            |
+|--------------------|------------|-----------------|
+| Nguyen Cong Thanh  | 2353100    | Task 1, Task 6  |
+| Ngo Quoc Hung      | 2352432    | Task 2          |
+| Nguyen Dang Khoa   | 2452543    | Task 5          |
+| Le Minh Tri        | 2353228    | Task 4          |
+| Nguyen Tan Huy     | 2252258    | Task 3          |
+
+
 ## Repository Design
 
 This repository is organized using a branch-per-task structure.  
