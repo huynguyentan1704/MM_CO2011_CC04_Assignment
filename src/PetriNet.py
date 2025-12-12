@@ -21,102 +21,6 @@ class PetriNet:
         self.O = O
         self.M0 = M0
 
-    @classmethod
-    def from_pnml(cls, filename: str) -> "PetriNet":
-        tree = ET.parse(filename)
-        root = tree.getroot()
-        
-        def get_child(parent, tag_suffix):
-            for child in parent:
-                if child.tag.endswith(tag_suffix):
-                    return child
-            return None
-
-        def get_text_from(node):
-            if node is None: return None
-            text_node = get_child(node, 'text')
-            if text_node is not None:
-                return text_node.text
-            return None
-        
-        # 1. Places
-        raw_places = []
-        for elem in root.iter():
-            if elem.tag.endswith('place'):
-                p_id = elem.get('id')
-                name_node = get_child(elem, 'name')
-                p_name = get_text_from(name_node)
-                
-                init_m = 0
-                im_node = get_child(elem, 'initialMarking')
-                val = get_text_from(im_node)
-                if val:
-                    try: init_m = int(val)
-                    except: init_m = 0
-                
-                raw_places.append({'id': p_id, 'name': p_name, 'm0': init_m})
-
-        # 2. Transitions
-        raw_transitions = []
-        for elem in root.iter():
-            if elem.tag.endswith('transition'):
-                t_id = elem.get('id')
-                name_node = get_child(elem, 'name')
-                t_name = get_text_from(name_node)
-                raw_transitions.append({'id': t_id, 'name': t_name})
-
-        # Sort by Name (Crucial for test matching)
-        raw_places.sort(key=lambda x: x['name'] if x['name'] else "")
-        raw_transitions.sort(key=lambda x: x['name'] if x['name'] else "")
-
-        place_id_map = {p['id']: i for i, p in enumerate(raw_places)}
-        trans_id_map = {t['id']: i for i, t in enumerate(raw_transitions)}
-
-        # 3. Build Matrices
-        num_p = len(raw_places)
-        num_t = len(raw_transitions)
-        
-        I = np.zeros((num_p, num_t), dtype=int)
-        O = np.zeros((num_p, num_t), dtype=int)
-        
-        # 4. Process Arcs
-        for elem in root.iter():
-            if elem.tag.endswith('arc'):
-                source = elem.get('source')
-                target = elem.get('target')
-                
-                weight = 1
-                inscription = get_child(elem, 'inscription')
-                val = get_text_from(inscription)
-                if val:
-                    try: weight = int(val)
-                    except: weight = 1
-                
-                if source in place_id_map and target in trans_id_map:
-                    p_idx = place_id_map[source]
-                    t_idx = trans_id_map[target]
-                    I[p_idx, t_idx] += weight
-                    
-                elif source in trans_id_map and target in place_id_map:
-                    t_idx = trans_id_map[source]
-                    p_idx = place_id_map[target]
-                    
-                    # Logic adjustment to match test expectation:
-                    # If I matches but O is transposed, we use the standard assignment.
-                    # The error showed strict transposition for O.
-                    # We stick to standard P x T assignment.
-                    O[p_idx, t_idx] += weight
-
-        # 5. M0 and Lists
-        M0 = np.array([p['m0'] for p in raw_places], dtype=int)
-        
-        place_ids = [p['id'] for p in raw_places]
-        trans_ids = [t['id'] for t in raw_transitions]
-        place_names = [p['name'] for p in raw_places]
-        trans_names = [t['name'] for t in raw_transitions]
-        
-        return cls(place_ids, trans_ids, place_names, trans_names, I, O, M0)
-
     def __str__(self) -> str:
         s = []
         s.append("Places: " + str(self.place_ids))
@@ -126,14 +30,243 @@ class PetriNet:
         s.append("\nI (input) matrix:")
         s.append(str(self.I))
         s.append("\nO (output) matrix:")
-        
-        # --- TEST FIX ---
-        # The test expects the O matrix to be the transpose of what is calculated 
-        # (Likely a T x P vs P x T convention mismatch in the test file generation).
-        # We manually transpose the string output for O to pass the string comparison.
-        # This keeps the logic correct (P x T) for BFS, but satisfies the print test.
-        s.append(str(self.O.T)) 
-        
+        s.append(str(self.O))
         s.append("\nInitial marking M0:")
         s.append(str(self.M0))
         return "\n".join(s)
+
+    @classmethod
+    def from_pnml(cls, filename: str) -> "PetriNet":
+
+
+        """
+        from_pnml: Step-by-step PNML parsing (summary)
+
+        1. Parse the XML file and locate the <net> element.
+        2. Read all places in order:
+        - Extract id, optional name, and initial marking (default 0).
+        - Check: id exists, no duplicates, marking is non-negative.
+        3. Read all transitions in order:
+        - Extract id and optional name.
+        - Check: id exists, no duplicates, not overlapping with place ids.
+        4. Build index lookup tables for places and transitions.
+        5. Initialize I and O matrices with shape (T × P).
+        6. Iterate through all arcs:
+        - Extract source, target, and weight (default = 1).
+        - Check: source/target exist, weight > 0.
+        - Allowed connections:
+            • place → transition → assign to I
+            • transition → place → assign to O
+            Invalid forms (place→place, trans→trans) raise an error.
+        7. Validate matrix shapes and the length of M0.
+        8. Ensure each transition has at least one incoming or outgoing arc.
+        9. Return a fully constructed and validated PetriNet object.
+        """
+
+        tree = ET.parse(filename)
+        root = tree.getroot()
+
+        # ---------------------------
+        # [CHECK] Phải có <net> trong file PNML
+        # ---------------------------
+        net_el = root.find(".//{*}net")
+        if net_el is None:
+            raise ValueError("PNML file does not contain a <net> element")
+
+        # ---------------------------
+        # 1) Đọc PLACE (giữ nguyên thứ tự)
+        # ---------------------------
+        place_ids = []
+        place_names = []
+        markings = []
+
+        for p in net_el.findall(".//{*}place"):
+            pid = p.get("id")
+
+            # [CHECK] Mỗi place phải có id
+            if pid is None:
+                raise ValueError("Found a <place> without an id")
+
+            # name (có thể None)
+            text_el = p.find(".//{*}name/{*}text")
+            name = text_el.text.strip() if text_el is not None and text_el.text else None
+
+            # initial marking (mặc định = 0 nếu không có)
+            m_el = p.find(".//{*}initialMarking/{*}text")
+            if m_el is not None and m_el.text:
+                m = int(m_el.text.strip())
+                # [CHECK] Initial marking không được âm
+                if m < 0:
+                    raise ValueError(f"Initial marking of place '{pid}' must be non-negative")
+            else:
+                m = 0
+
+            place_ids.append(pid)
+            place_names.append(name)
+            markings.append(m)
+
+        # ---------------------------
+        # [CHECK] Phải có ít nhất 1 place
+        # ---------------------------
+        if not place_ids:
+            raise ValueError("PNML net has no places")
+
+        # [CHECK] Không được trùng id giữa các place
+        if len(place_ids) != len(set(place_ids)):
+            raise ValueError("Duplicated place id detected in PNML")
+
+        # ---------------------------
+        # 2) Đọc TRANSITION (giữ nguyên thứ tự)
+        # ---------------------------
+        trans_ids = []
+        trans_names = []
+
+        for t in net_el.findall(".//{*}transition"):
+            tid = t.get("id")
+
+            # [CHECK] Mỗi transition phải có id
+            if tid is None:
+                raise ValueError("Found a <transition> without an id")
+
+            text_el = t.find(".//{*}name/{*}text")
+            name = text_el.text.strip() if text_el is not None and text_el.text else None
+
+            trans_ids.append(tid)
+            trans_names.append(name)
+
+        # ---------------------------
+        # [CHECK] Phải có ít nhất 1 transition
+        # ---------------------------
+        if not trans_ids:
+            raise ValueError("PNML net has no transitions")
+
+        # [CHECK] Không được trùng id giữa các transition
+        if len(trans_ids) != len(set(trans_ids)):
+            raise ValueError("Duplicated transition id detected in PNML")
+
+        # [CHECK] Không được có id dùng cho cả place và transition
+        if set(place_ids) & set(trans_ids):
+            raise ValueError("Some ids are used both as place and transition")
+
+        # ---------------------------
+        # 3) Lưu các field cơ bản + M0
+        # ---------------------------
+        M0 = np.array(markings, dtype=int)
+
+        # ---------------------------
+        # 4) Precompute index lookup
+        # ---------------------------
+        place_index = {pid: i for i, pid in enumerate(place_ids)}
+        trans_index = {tid: j for j, tid in enumerate(trans_ids)}
+
+        # ---------------------------
+        # 5) Tạo I và O (T x P) - T dòng, P cột
+        # ---------------------------
+        P = len(place_ids)
+        T = len(trans_ids)
+
+        I = np.zeros((T, P), dtype=int)  # I[t, p]
+        O = np.zeros((T, P), dtype=int)  # O[t, p]
+
+        # ---------------------------
+        # 6) Duyệt ARC → gán I/O
+        #    + Consistency check:
+        #      - source/target phải tồn tại
+        #      - chỉ cho phép place->transition hoặc transition->place
+        #      - weight phải dương
+        # ---------------------------
+        for arc in net_el.findall(".//{*}arc"):
+            arc_id = arc.get("id")
+            src = arc.get("source")
+            tgt = arc.get("target")
+
+            # [CHECK] Arc phải có source và target
+            if src is None or tgt is None:
+                raise ValueError(f"Arc {arc_id}: missing source or target")
+
+            src_is_place = src in place_index
+            src_is_trans = src in trans_index
+            tgt_is_place = tgt in place_index
+            tgt_is_trans = tgt in trans_index
+
+            # [CHECK] source phải là place hoặc transition đã khai báo
+            if not (src_is_place or src_is_trans):
+                raise ValueError(f"Arc {arc_id}: unknown source '{src}'")
+
+            # [CHECK] target phải là place hoặc transition đã khai báo
+            if not (tgt_is_place or tgt_is_trans):
+                raise ValueError(f"Arc {arc_id}: unknown target '{tgt}'")
+
+            # ---------------------------
+            # Đọc weight, mặc định = 1.
+            # Nếu parse int fail → raise để tránh model mơ hồ.
+            # ---------------------------
+            w_el = arc.find(".//{*}inscription/{*}text")
+            if w_el is not None and w_el.text:
+                try:
+                    w = int(w_el.text.strip())
+                except ValueError:
+                    raise ValueError(f"Arc {arc_id}: weight must be an integer")
+            else:
+                w = 1
+
+            # [CHECK] Trọng số phải dương
+            if w <= 0:
+                raise ValueError(f"Arc {arc_id}: weight must be positive, got {w}")
+
+            # ---------------------------
+            # Phân loại kiểu arc:
+            #   - place -> transition  (input arc)  → I
+            #   - transition -> place  (output arc) → O
+            #   - place->place / trans->trans: vô nghĩa → lỗi
+            # ---------------------------
+            if src_is_place and tgt_is_trans:
+                # place -> transition: input
+                p = place_index[src]
+                t = trans_index[tgt]
+                I[t, p] += w
+
+            elif src_is_trans and tgt_is_place:
+                # transition -> place: output
+                t = trans_index[src]
+                p = place_index[tgt]
+                O[t, p] += w
+
+            else:
+                # [CHECK] Cấm place->place và transition->transition
+                raise ValueError(
+                    f"Arc {arc_id}: invalid connection '{src}' -> '{tgt}'. "
+                    "Only place->transition or transition->place are allowed."
+                )
+
+        # ---------------------------
+        # 7) Sanity check cuối cùng cho shape
+        # ---------------------------
+        if I.shape != (T, P) or O.shape != (T, P):
+            raise ValueError("I or O matrix has inconsistent shape with (T, P)")
+
+        if M0.shape != (P,):
+            raise ValueError("Initial marking M0 has inconsistent length with number of places")
+
+        # ---------------------------
+        # 8) Optional: check transition không bị "cô đơn"
+        #    (không có input và không có output) → thường là model lỗi.
+        # ---------------------------
+        for t_idx, tid in enumerate(trans_ids):
+            if I[t_idx, :].sum() == 0 and O[t_idx, :].sum() == 0:
+                raise ValueError(f"Transition '{tid}' has no incident arcs")
+
+        # ---------------------------
+        # 9) Tạo object PetriNet đầy đủ
+        # ---------------------------
+        return cls(
+            place_ids=place_ids,
+            trans_ids=trans_ids,
+            place_names=place_names,
+            trans_names=trans_names,
+            I=I,
+            O=O,
+            M0=M0,
+        )
+
+
