@@ -16,9 +16,9 @@
 |--------------------|------------|-----------------|
 | Nguyen Cong Thanh  | 2353100    | Task 1, Task 6  |
 | Ngo Quoc Hung      | 2352432    | Task 2          |
-| Nguyen Dang Khoa   | 2452543    | Task 5          |
-| Le Minh Tri        | 2353228    | Task 4          |
 | Nguyen Tan Huy     | 2252258    | Task 3          |
+| Le Minh Tri        | 2353228    | Task 4          |
+| Nguyen Dang Khoa   | 2452543    | Task 5          |
 
 
 ## Repository Design
