@@ -11,113 +11,126 @@ def deadlock_reachable_marking(
     reach_bdd: BinaryDecisionDiagram,
 ) -> Optional[List[int]]:
     """
-    Deadlock detection by hybrid BDD + ILP, without brute-force search.
+    Deadlock detection bằng hybrid BDD + ILP (trên tập reachable):
 
-    - BDD (Task 3) gives the set of reachable markings in 1-safe PN.
-    - Expand BDD assignments into full 0/1 markings.
+    - BDD (Task 3) cho ta tập marking reachable (0/1, safe).
+    - Ta liệt kê tất cả reachable marking M^(k).
+      Nếu BDD không phụ thuộc vào 1 số place (don’t care),
+      ta expand 0/1 cho các place đó.
     - Precompute enabled[t][k]:
-         enabled[t][k] = 1 if transition t is enabled at marking M^(k)
-                         AND its successor marking is also reachable.
+          t enabled tại M^(k) nếu:
+            + đủ token: M[p] >= I[t,p] với mọi p
+            + successor M' = M - I_t + O_t cũng thuộc tập reachable
+              (theo tập đã liệt kê)
     - ILP:
-        Variables: y_k ∈ {0,1} selecting exactly one reachable marking.
-        Constraints:  sum(y_k) = 1
-                      For each t: Σ_k enabled[t][k] * y_k = 0
-        → select a marking where NO transition is enabled → deadlock.
+        + Biến y_k ∈ {0,1}, chọn đúng 1 marking reachable
+        + Với mọi t: Σ_k enabled[t][k] * y_k = 0 (không t nào enabled)
+    - Nếu ILP feasible -> marking chọn ra là deadlock reachable.
     """
 
-    # If BDD is empty → no reachable states → no deadlock.
+    # Không có reachable marking
     if reach_bdd.is_zero():
         return None
 
-    I = np.array(pn.I, dtype=int)   # (T,P)
-    O = np.array(pn.O, dtype=int)
-    place_ids = pn.place_ids        # list of place names
-
+    I = pn.I  # |T| x |P|
+    O = pn.O
+    place_ids = pn.place_ids
     n_trans, n_places = I.shape
 
     # ---------------------------------------------------------
-    # 1) Enumerate all reachable markings from the BDD
+    # 1) Liệt kê tất cả marking reachable từ BDD
+    #    (kể cả expand các place không nằm trong support)
     # ---------------------------------------------------------
     support_vars = list(reach_bdd.support)
-    support_names = set(v.name for v in support_vars)
+    name_to_var = {v.name: v for v in support_vars}
+    support_names = set(name_to_var.keys())
 
     missing_place_ids = [pid for pid in place_ids if pid not in support_names]
 
-    reachable_set = set()
+    reachable_markings_set = set()
     reachable_markings: List[List[int]] = []
 
-    for assg in reach_bdd.satisfy_all():
-        base = {v.name: int(val) for v, val in assg.items()}
+    for assignment in reach_bdd.satisfy_all():
+        # assignment: {bddvar: 0/1} -> {name: 0/1}
+        base_assign = {v.name: int(val) for v, val in assignment.items()}
 
-        # No don't-care variables
         if not missing_place_ids:
-            full = [base.get(pid, 0) for pid in place_ids]
-            tup = tuple(full)
-            if tup not in reachable_set:
-                reachable_set.add(tup)
-                reachable_markings.append(full)
+            full_assign = base_assign
+            m_vec = [full_assign.get(pid, 0) for pid in place_ids]
+            t = tuple(m_vec)
+            if t not in reachable_markings_set:
+                reachable_markings_set.add(t)
+                reachable_markings.append(m_vec)
         else:
-            # Expand all missing vars
+            # Expand 0/1 cho các place không nằm trong support (don’t care)
             for bits in itertools.product([0, 1], repeat=len(missing_place_ids)):
-                full_map = dict(base)
-                full_map.update(dict(zip(missing_place_ids, bits)))
-                full = [full_map.get(pid, 0) for pid in place_ids]
-                tup = tuple(full)
-                if tup not in reachable_set:
-                    reachable_set.add(tup)
-                    reachable_markings.append(full)
+                extra = dict(zip(missing_place_ids, bits))
+                full_assign = dict(base_assign)
+                full_assign.update(extra)
+
+                m_vec = [full_assign.get(pid, 0) for pid in place_ids]
+                t = tuple(m_vec)
+                if t not in reachable_markings_set:
+                    reachable_markings_set.add(t)
+                    reachable_markings.append(m_vec)
 
     K = len(reachable_markings)
     if K == 0:
         return None
 
-    R = np.array(reachable_markings, dtype=int)   # (K,P)
+    reachable_arr = np.array(reachable_markings, dtype=int)  # K x P
 
     # ---------------------------------------------------------
-    # 2) Precompute enabled[t][k]
+    # 2) Precompute enabled[t][k]:
+    #    t enabled tại M^(k) nếu:
+    #      - M[p] >= I[t,p] (đủ token)
+    #      - M_next = M - I_t + O_t nằm trong reachable_markings_set
     # ---------------------------------------------------------
     enabled = np.zeros((n_trans, K), dtype=int)
 
     for t in range(n_trans):
-        need = I[t]                            # (P,)
-        ok_input = (R >= need).all(axis=1)     # enough tokens
+        need = I[t]                                # (P,)
+        ok1 = (reachable_arr >= need).all(axis=1)  # (K,)
 
-        R_next = R - I[t] + O[t]               # fired result
+        M_next = reachable_arr - I[t] + O[t]       # (K,P)
 
-        ok_reachable = np.array([
-            tuple(R_next[k]) in reachable_set
+        ok2 = np.array([
+            tuple(M_next[k].tolist()) in reachable_markings_set
             for k in range(K)
         ])
 
-        enabled[t] = (ok_input & ok_reachable).astype(int)
+        enabled[t] = (ok1 & ok2).astype(int)
 
     # ---------------------------------------------------------
-    # 3) ILP: Select exactly one deadlock marking
+    # 3) ILP: chọn deadlock từ tập reachable
     # ---------------------------------------------------------
-    prob = pulp.LpProblem("Deadlock_Detection_On_Reachable", pulp.LpMinimize)
+    prob = pulp.LpProblem("Deadlock_On_Reachable", pulp.LpMinimize)
 
-    # Decision variables: choose marking k
     y = [pulp.LpVariable(f"y_{k}", lowBound=0, upBound=1, cat="Binary")
          for k in range(K)]
 
-    # Must select exactly one reachable marking
+    # chọn đúng 1 marking
     prob += pulp.lpSum(y[k] for k in range(K)) == 1
 
-    # Deadlock constraints: no transition is enabled
+    # Deadlock: không transition nào enabled
     for t in range(n_trans):
         prob += pulp.lpSum(enabled[t][k] * y[k] for k in range(K)) == 0
 
-    # Solve
     status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
     if pulp.LpStatus[status] != "Optimal":
         return None
 
     # ---------------------------------------------------------
-    # 4) Extract chosen marking
+    # 4) Lấy marking được chọn (y_k = 1)
     # ---------------------------------------------------------
+    chosen_k = None
     for k in range(K):
-        v = y[k].value()
-        if v is not None and v > 0.5:
-            return [int(x) for x in reachable_markings[k]]
+        val = y[k].value()
+        if val is not None and val > 0.5:
+            chosen_k = k
+            break
 
-    return None
+    if chosen_k is None:
+        return None
+
+    return [int(x) for x in reachable_markings[chosen_k]]
