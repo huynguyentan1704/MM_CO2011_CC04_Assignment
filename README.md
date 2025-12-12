@@ -27,6 +27,7 @@ source venv/bin/activate
 ```
 pip install -r requirements.txt
 ```
+## Visualization
 
 
 ##  Running tests
