@@ -1,7 +1,5 @@
 # Symbolic and Algebraic Reasoning in Petri Nets 
 
-**Này thiết kế src của anh các bạn có thể chỉnh lại src theo cấu trúc nhóm mình cho khác đi khỏi bị trùng cấu trúc**
-
 ```mermaid
 flowchart TD
 
@@ -36,12 +34,12 @@ flowchart TD
 
 ## Requirements
 
-- Tạo môi trường ảo (virtual environment)
+- Create virtual environment
 ```sh
 python3 -m venv venv
 ```
 
-- Kích hoạt môi trường ảo
+- Activate virtual environment
 ```sh
 # Windows
 venv\Scripts\Activate.ps1
@@ -50,7 +48,7 @@ venv\Scripts\Activate.ps1
 source venv/bin/activate
 ```
 
-- Cài đặt các thư viện từ `requirements.txt`
+- Install required library from `requirements.txt`
 ```sh
 pip install -r requirements.txt
 ```
@@ -58,24 +56,25 @@ pip install -r requirements.txt
 ## Running Code
 
 ```sh
-python3 run.py
+python run.py
 ```
 
 ##  Running tests
 
 - Run all tests
 ```sh
-python3 -m pytest tests/ -v
+python -m pytest tests/ -v
 ```
+(I want to add run_test_all.png picture)
 
-- Run a single test FIle
+- Run a single test File (PetriNet)
 
 ```sh
-python3 -m pytest tests/test_petriNet.py -v
+python -m pytest tests/test_petriNet.py -v
 ```
 
-- Run a single test FIle
+- Run a single test File (BDD)
 
 ```sh
-python3 -m pytest tests/test_petriNet.py::test_001 -v
+python -m pytest tests/test_BDD.py -v
 ```
