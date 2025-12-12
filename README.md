@@ -31,7 +31,7 @@ Each task required in the BTL HK251 assignment is implemented on its own Git bra
 - `task3` – BDD reachability  
 - `task4` – Deadlock detection  
 - `task5` – Optimization (max cᵀM)  
-- `task6` – Full project runner  
+- `task6` – Full project runner - the final source for submit
 
 All branches share the same base layout so that each task can be developed and tested independently while still building on the same underlying Petri Net model.
 
