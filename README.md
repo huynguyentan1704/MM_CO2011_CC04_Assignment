@@ -27,6 +27,12 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 ##  Visualization 
+<p align="center">
+  <img src="task3_demo.jpg" alt="testcase">
+</p>
+<p align="center">
+  <img src="task3_demo2.jpg" alt="testcase">
+</p>
 
 
 ##  Running tests
