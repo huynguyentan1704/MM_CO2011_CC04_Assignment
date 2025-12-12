@@ -35,7 +35,7 @@ pip install -r requirements.txt
 python3 -m pytest -vv test_BDD.py
 ```
 <p align="center">
-  <img src="img/task3_test" alt="testcase">
+  <img src="img/task3_test.jpg" alt="testcase">
 </p>
 - Run a procedure
 
@@ -43,6 +43,6 @@ python3 -m pytest -vv test_BDD.py
 python run.py
 ```
 <p align="center">
-  <img src="img/task3" alt="run.py">
+  <img src="img/task3.jpg" alt="run.py">
 </p>
 
