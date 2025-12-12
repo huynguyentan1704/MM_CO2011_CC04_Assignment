@@ -65,16 +65,25 @@ python run.py
 ```sh
 python -m pytest tests/ -v
 ```
-(I want to add run_test_all.png picture)
+<p align="center">
+  <img src = "https://github.com/huynguyentan1704/MHH_win-to-win/blob/task6/run_test_all.png"/>
+</p>
+
 
 - Run a single test File (PetriNet)
 
 ```sh
 python -m pytest tests/test_petriNet.py -v
 ```
+<p align="center">
+  <img src = "https://github.com/huynguyentan1704/MHH_win-to-win/blob/task6/run_test_PetriNet.png"/>
+</p>
 
 - Run a single test File (BDD)
 
 ```sh
 python -m pytest tests/test_BDD.py -v
 ```
+<p align="center">
+  <img src = "https://github.com/huynguyentan1704/MHH_win-to-win/blob/task6/run_test_BDD.png"/>
+</p>
